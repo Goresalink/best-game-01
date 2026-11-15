@@ -107,6 +107,67 @@ export function setupShot(G, scene, seed) {
     }
     G.levelupChoices = rollChoices(G);
     G.time = 98;
+  } else if (scene === 'boss') {
+    // The cover: the final fight. The Gloam King at the top with its spiral
+    // of orbs, minions closing in, the keeper below with a full spread of
+    // bolts, the boss bar and the wave banner all on screen.
+    G.state = 'playing';
+    G.wave = 10;
+    G.score = 15200;
+    G.best = 8420;
+    G.kills = 310;
+    G.combo = 22;
+    G.comboTimer = 2.0;
+    G.bestCombo = 31;
+    G.player.level = 11;
+    G.player.xp = 12;
+    G.player.xpNext = 50;
+    G.player.hp = 2;
+    G.player.multishot = 3;
+    G.player.pierce = 2;
+    G.player.bombs = 1;
+    G.player.x = G.width / 2;
+    G.player.y = 560;
+    G.player.angle = -Math.PI / 2;
+    const king = spawnEnemy(G, 'king', G.width / 2, 305, true);
+    king.spawnT = 1;
+    king.hp = Math.round(king.maxHp * 0.55);
+    for (const [type, x, y] of [['mite', 300, 320], ['mite', 980, 320], ['wisp', 220, 470], ['wisp', 1060, 470], ['spitter', 380, 230], ['spitter', 900, 230], ['brute', 790, 440]]) {
+      const e = spawnEnemy(G, type, x, y, false);
+      e.spawnT = 1;
+    }
+    // The King's spiral: two arms of orbs winding outward.
+    for (let i = 0; i < 14; i++) {
+      const a = i * 0.55;
+      const r = 70 + i * 16;
+      const ox = king.x + Math.cos(a) * r;
+      const oy = king.y + Math.sin(a) * r;
+      G.ebullets.push({ x: ox, y: oy, vx: Math.cos(a) * 170, vy: Math.sin(a) * 170, r: 7, damage: 1, life: 5 });
+      const a2 = a + Math.PI;
+      const ox2 = king.x + Math.cos(a2) * r;
+      const oy2 = king.y + Math.sin(a2) * r;
+      G.ebullets.push({ x: ox2, y: oy2, vx: Math.cos(a2) * 170, vy: Math.sin(a2) * 170, r: 7, damage: 1, life: 5 });
+    }
+    // The keeper's triple-shot fan, mid-flight toward the King.
+    for (let i = 0; i < 9; i++) {
+      const a = -Math.PI / 2 + (G.rng() - 0.5) * 0.45;
+      G.bullets.push({
+        x: G.player.x + (G.rng() - 0.5) * 60, y: G.player.y - 30 - i * 32,
+        vx: Math.cos(a) * 580, vy: Math.sin(a) * 580,
+        r: 5, damage: 30, pierce: 2, hitIds: new Set(), life: 1,
+      });
+    }
+    for (let i = 0; i < 10; i++) {
+      G.gems.push({ x: 300 + G.rng() * 680, y: 380 + G.rng() * 180, value: 1, dead: false, bob: G.rng() * 6 });
+    }
+    G.pickups.push({ x: 950, y: 620, kind: 'heart', dead: false, bob: 0 });
+    spawnBurst(G, 640, 330, '#c07aff', 16, 220, 0.6);
+    spawnRing(G, king.x, king.y, '#ff4d6d', 150);
+    G.banner = 'WAVE 10 — THE GLOAM KING';
+    G.bannerTimer = 1.6;
+    G.time = 480;
+    G.stats.shotsFired = 1320;
+    G.stats.shotsHit = 990;
   } else if (scene === 'victory') {
     G.state = 'victory';
     G.wave = 10;

@@ -154,19 +154,28 @@ export function drawVictory(G, ctx) {
   ctx.save();
   ctx.shadowColor = '#ffd27a';
   ctx.shadowBlur = 34;
-  title(ctx, 'DAWN BREAKS', G.width / 2, 150, 64, '#ffe9a8');
+  title(ctx, 'DAWN BREAKS', G.width / 2, 140, 64, '#ffe9a8');
   ctx.restore();
-  title(ctx, 'The Gloam King is fallen. The valley wakes in warm light.', G.width / 2, 194, 19, '#e8e2ff');
-  title(ctx, 'You kept the last lantern burning — all 10 waves survived.', G.width / 2, 222, 19, '#e8e2ff');
+  title(ctx, 'The Gloam King is fallen. The valley wakes in warm light.', G.width / 2, 184, 19, '#e8e2ff');
+  title(ctx, 'You kept the last lantern burning — all 10 waves survived.', G.width / 2, 212, 19, '#e8e2ff');
   if (G.newBest) {
-    title(ctx, '★ NEW BEST SCORE! ★', G.width / 2, 258, 24, '#ffd27a');
+    title(ctx, '★ NEW BEST SCORE! ★', G.width / 2, 244, 22, '#ffd27a');
   }
-  panel(ctx, G.width / 2 - 280, 292, 560, 190);
+  panel(ctx, G.width / 2 - 280, 278, 560, 224);
   statsLines(G).forEach((line, i) => {
-    title(ctx, line, G.width / 2, 328 + i * 32, i === 0 ? 24 : 18, i === 0 ? '#ffe9a8' : '#e8e2ff');
+    title(ctx, line, G.width / 2, 314 + i * 32, i === 0 ? 24 : 18, i === 0 ? '#ffe9a8' : '#e8e2ff');
   });
+  // Performance stars: one for the win, one for keeping 2+ hearts, one
+  // for 60%+ accuracy. They are the run's grade, shown on the results.
+  const stars = 1 + (G.player.hp >= 2 ? 1 : 0) + (accuracy(G) >= 60 ? 1 : 0);
+  ctx.font = 'bold 30px Georgia, serif';
+  ctx.textAlign = 'center';
+  for (let i = 0; i < 3; i++) {
+    ctx.fillStyle = i < stars ? '#ffd27a' : 'rgba(255, 210, 122, 0.25)';
+    ctx.fillText('★', G.width / 2 - 44 + i * 44, 486);
+  }
   const pulse = 0.65 + 0.35 * Math.sin(G.time * 3);
   ctx.globalAlpha = pulse;
-  title(ctx, '▶  PRESS R OR CLICK TO PLAY AGAIN  ◀', G.width / 2, 546, 22, '#ffe9a8');
+  title(ctx, '▶  PRESS R OR CLICK TO PLAY AGAIN  ◀', G.width / 2, 556, 22, '#ffe9a8');
   ctx.globalAlpha = 1;
 }
